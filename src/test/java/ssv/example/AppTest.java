@@ -53,12 +53,12 @@ public class AppTest
      * Rigourous Test :-)
      */
     public void testValidStudent() {
-        final var student = new Student("1", "Andrei", 933, "a@example.com");
+        final Student student = new Student("1", "Andrei", 933, "a@example.com");
         service.addStudent(student);
     }
 
     public void testInvalidStudent() {
-        final var student = new Student("", "Andrei", 933, "a@example.com");
+        final Student student = new Student("", "Andrei", 933, "a@example.com");
         try {
             service.addStudent(student);
             assert(false);

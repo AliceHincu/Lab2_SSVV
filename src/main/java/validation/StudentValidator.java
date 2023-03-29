@@ -2,6 +2,8 @@ package validation;
 
 import domain.Student;
 
+import java.util.regex.Pattern;
+
 public class StudentValidator implements Validator<Student> {
 
     /**
@@ -17,7 +19,7 @@ public class StudentValidator implements Validator<Student> {
         if(entity.getID() == null){
             throw new ValidationException("Id incorect!");
         }
-        if(entity.getNume() == ""){
+        if(entity.getNume().equals("")){
             throw new ValidationException("Nume incorect!");
         }
         if(entity.getGrupa() < 0) {
@@ -28,6 +30,14 @@ public class StudentValidator implements Validator<Student> {
         }
         if(entity.getNume() == null){
             throw new ValidationException("Nume incorect!");
+        }
+        final Pattern namePattern = Pattern.compile("^[a-zA-Z\\- ]+$");
+        if (!namePattern.matcher(entity.getNume()).find()) {
+            throw new ValidationException("Numele contine caractere invalide!");
+        }
+        final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$");
+        if (!emailPattern.matcher(entity.getEmail()).find()) {
+            throw new ValidationException("Numele contine caractere invalide!");
         }
         if(entity.getEmail().equals("")){
             throw new ValidationException("Email incorect!");

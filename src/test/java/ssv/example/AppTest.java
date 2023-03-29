@@ -13,21 +13,15 @@ import validation.StudentValidator;
 import validation.TemaValidator;
 import validation.ValidationException;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest
-        extends TestCase {
-    Service service;
+import java.util.function.Consumer;
 
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
+
+public class AppTest extends TestCase {
     public AppTest(String testName) {
         super(testName);
+    }
 
+    private Service getService() {
         StudentValidator studentValidator = new StudentValidator();
         TemaValidator temaValidator = new TemaValidator();
         String filenameStudent = "fisiere/Studenti.xml";
@@ -38,30 +32,96 @@ public class AppTest
         TemaXMLRepo temaXMLRepository = new TemaXMLRepo(filenameTema);
         NotaValidator notaValidator = new NotaValidator(studentXMLRepository, temaXMLRepository);
         NotaXMLRepo notaXMLRepository = new NotaXMLRepo(filenameNota);
-        service = new Service(studentXMLRepository, studentValidator, temaXMLRepository, temaValidator, notaXMLRepository, notaValidator);
-
+        return new Service(studentXMLRepository, studentValidator, temaXMLRepository, temaValidator, notaXMLRepository, notaValidator);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
     public static Test suite() {
         return new TestSuite(AppTest.class);
     }
 
-    /**
-     * Rigourous Test :-)
-     */
+    private void assertThrows(Runnable runnable) {
+        try {
+            runnable.run();
+            assert(false);
+        } catch (Exception e) {}
+    }
+
     public void testValidStudent() {
+        final Service service = getService();
         final Student student = new Student("1", "Andrei", 933, "a@example.com");
         service.addStudent(student);
     }
 
     public void testInvalidStudent() {
+        final Service service = getService();
         final Student student = new Student("", "Andrei", 933, "a@example.com");
-        try {
-            service.addStudent(student);
-            assert(false);
-        } catch (ValidationException e) {}
+        assertThrows(() -> service.addStudent(student));
+    }
+
+    public void testValidId() {
+        final Student student = new Student("1", "Andrei", 933, "a@example.com");
+        final Service service = getService();
+        service.addStudent(student);
+    }
+
+    public void testEmptyId() {
+        final Student student = new Student("", "Andrei", 933, "a@example.com");
+        final Service service = getService();
+        assertThrows(() -> service.addStudent(student));
+    }
+
+    public void testNullId() {
+        final Student student = new Student(null, "Andrei", 933, "a@example.com");
+        final Service service = getService();
+        assertThrows(() -> service.addStudent(student));
+    }
+
+    public void testValidNameContents() {
+        final Student student = new Student("A", "Test test-test", 933, "a@example.com");
+        final Service service = getService();
+        service.addStudent(student);
+    }
+
+    public void testInvalidNameCharacters() {
+        final Student student = new Student("A", "Test+++---", 933, "a@example.com");
+        final Service service = getService();
+        assertThrows(() -> service.addStudent(student));
+    }
+
+    public void testEmptyName() {
+        final Student student = new Student("A", "", 933, "a@example.com");
+        final Service service = getService();
+        assertThrows(() -> service.addStudent(student));
+    }
+
+    public void testValidGroup() {
+        final Student student = new Student("A", "Andrei", 933, "a@example.com");
+        final Service service = getService();
+        service.addStudent(student);
+    }
+
+    public void testInvalidGroupLess() {
+        final Student student = new Student("A", "Andrei", -1, "a@example.com");
+        final Service service = getService();
+        assertThrows(() -> service.addStudent(student));
+    }
+
+    public void testInvalidGroupGreater() {
+        @SuppressWarnings("NumericOverflow")
+        final Student student = new Student("A", "Andrei", Integer.MAX_VALUE + 1, "a@example.com");
+        final Service service = getService();
+        assertThrows(() -> service.addStudent(student));
+    }
+
+    public void testValidEmail() {
+        final Student student = new Student("A", "Andrei", 933, "a@example.com");
+        final Service service = getService();
+        service.addStudent(student);
+    }
+
+    public void testInvalidEmail() {
+        final Student student = new Student("A", "Andrei", 933, "com");
+        final Service service = getService();
+        assertThrows(() -> service.addStudent(student));
     }
 }

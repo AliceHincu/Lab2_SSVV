@@ -124,4 +124,16 @@ public class AppTest extends TestCase {
         final Service service = getService();
         assertThrows(() -> service.addStudent(student));
     }
+
+    public void testValidAssignment() {
+        final Tema tema = new Tema("1", "descriere", 5, 5);
+        final Service service = getService();
+        service.addTema(tema);
+    }
+
+    public void testInvalidAssignment() {
+        final Tema tema = new Tema("1", "descriere", 15, 5);
+        final Service service = getService();
+        assertThrows(() -> service.addTema(tema));
+    }
 }
